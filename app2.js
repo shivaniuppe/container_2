@@ -86,7 +86,7 @@ app2.post('/calculate', (req, res) => {
         .pipe(csv())
         .on('headers', (headers) => {
             console.log(`CSV Headers: ${headers}`);
-            if (headers.length !== 2 || headers[0] !== 'product' || headers[1] !== 'amount') {
+            if (headers.length !== 2 || headers[0].trim() !== 'product' || headers[1].trim() !== 'amount') {
                 isCSVFormatValid = false;
             }
         })
@@ -94,7 +94,7 @@ app2.post('/calculate', (req, res) => {
             console.log(`CSV Row: ${JSON.stringify(row)}`);
             if (isCSVFormatValid) {
                 if (row.product && row.amount && !isNaN(parseInt(row.amount, 10))) {
-                    if (row.product === product) {
+                    if (row.product.trim() === product) {
                         results.push(parseInt(row.amount, 10));
                     }
                 } else {
