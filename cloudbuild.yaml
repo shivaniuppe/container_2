@@ -1,0 +1,7 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/cloud-428420/container_1:latest", "."]
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/cloud-428420/container_1:latest"]
+images:
+  - "gcr.io/$PROJECT_ID/container_1:latest"
