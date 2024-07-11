@@ -1,9 +1,19 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/cloud-428420/container_1:latest", "."]
-  - name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/cloud-428420/container_1:latest"]
+    args:
+      [
+        "buildx",
+        "build",
+        "--platform",
+        "linux/amd64",
+        "-t",
+        "gcr.io/cloud-428420/container_2:latest",
+        "--push",
+        ".",
+      ]
+
 images:
-  - "gcr.io/cloud-428420/container_1:latest"
+  - "gcr.io/cloud-428420/container_2:latest"
+
 options:
   logging: CLOUD_LOGGING_ONLY

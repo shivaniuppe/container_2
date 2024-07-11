@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 services:
   container_2:
     platform: linux/amd64
@@ -10,6 +10,7 @@ services:
       - app-network
     volumes:
       - .:/data
+
 networks:
   app-network:
-    driver: bridge
+    external: true
