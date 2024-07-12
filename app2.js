@@ -13,7 +13,7 @@ app2.post('/calculate', (req, res) => {
     const product = data.product;
     const results = [];
 
-    const filePath = path.join('/data', fileName);
+    const filePath = path.join('/shivani_PV_dir', fileName);
 
     if (!fs.existsSync(filePath)) {
         return res.status(404).json({"file": fileName, "error": "File not found."});
