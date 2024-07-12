@@ -23,20 +23,15 @@ app2.post('/calculate', (req, res) => {
     fs.createReadStream(filePath)
         .pipe(csv())
         .on('headers', (headers) => {
-            const trimmedHeaders = headers.map(header => header.trim());
-            if (trimmedHeaders.length !== 2 || trimmedHeaders[0] !== 'product' || trimmedHeaders[1] !== 'amount') {
+            if (headers.length !== 2 || headers[0] !== 'product' || headers[1] !== 'amount') {
                 isCSVFormatValid = false;
             }
         })
         .on('data', (row) => {
             if (isCSVFormatValid) {
-                const trimmedRow = {
-                    product: row.product.trim(),
-                    amount: row.amount.trim()
-                };
-                if (trimmedRow.product && trimmedRow.amount && !isNaN(parseInt(trimmedRow.amount, 10))) {
-                    if (trimmedRow.product === product) {
-                        results.push(parseInt(trimmedRow.amount, 10));
+                if (row.product && row.amount && !isNaN(parseInt(row.amount, 10))) {
+                    if (row.product === product) {
+                        results.push(parseInt(row.amount, 10));
                     }
                 } else {
                     isCSVFormatValid = false;
