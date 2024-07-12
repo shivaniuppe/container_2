@@ -36,26 +36,31 @@ app2.post('/calculate', (req, res) => {
         .on('data', (row) => {
             if (isCSVFormatValid) {
                 try {
+                    if (!row.product || !row.amount) {
+                        throw new Error('Product or amount is undefined or null.');
+                    }
+        
                     const trimmedRow = {
                         product: row.product.trim(),
                         amount: row.amount.trim()
                     };
-                    if (trimmedRow.product && trimmedRow.amount && !isNaN(parseInt(trimmedRow.amount, 10))) {
-                        if (trimmedRow.product === product) {
-                            results.push(parseInt(trimmedRow.amount, 10));
-                        }
-                    } else {
-                        isCSVFormatValid = false;
-                        errorMessage = "Invalid row data.";
+        
+                    if (!trimmedRow.product || !trimmedRow.amount || isNaN(parseInt(trimmedRow.amount, 10))) {
+                        throw new Error('Invalid product or amount.');
+                    }
+        
+                    if (trimmedRow.product === product) {
+                        results.push(parseInt(trimmedRow.amount, 10));
                     }
                 } catch (error) {
-                    console.error('Error processing row:', error); // Log any error
+                    console.error('Error processing row:', error.message); // Log the specific error message
                     console.error('Row data:', row); // Log the row causing the error
                     isCSVFormatValid = false;
-                    errorMessage = "Error processing row:" +  error + " Row data: " + row + "Error processing row.";
+                    errorMessage = error.message;
                 }
             }
         })
+        
         .on('end', () => {
             if (!isCSVFormatValid) {
                 return res.status(400).json({"file": fileName, "error": errorMessage});
