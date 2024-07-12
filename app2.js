@@ -23,7 +23,11 @@ app2.post('/calculate', (req, res) => {
     fs.createReadStream(filePath)
         .pipe(csv())
         .on('headers', (headers) => {
-            if (headers.length !== 2 || headers[0] !== 'product' || headers[1] !== 'amount') {
+            const trimmedHeaders = headers.map(header => header.trim().toLowerCase());
+            const validHeaders = trimmedHeaders.length === 2 && 
+                                 trimmedHeaders[0] === 'product' && 
+                                 trimmedHeaders[1].replace(/\s/g, '') === 'amount';
+            if (!validHeaders) {
                 isCSVFormatValid = false;
             }
         })
