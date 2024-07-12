@@ -7,13 +7,13 @@ steps:
         "--platform",
         "linux/amd64",
         "-t",
-        "gcr.io/cloud-428420/container_2:latest",
+        "gcr.io/cloud-429207/container_2:latest",
         "--push",
         ".",
       ]
 
 images:
-  - "gcr.io/cloud-428420/container_2:latest"
+  - "gcr.io/cloud-429207/container_2:latest"
 
 options:
   logging: CLOUD_LOGGING_ONLY

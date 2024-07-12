@@ -2,7 +2,7 @@ version: latest
 services:
   container_2:
     platform: linux/amd64
-    image: gcr.io/cloud-428420/container_2:latest
+    image: gcr.io/cloud-429207/container_2:latest
     container_name: container_2
     ports:
       - "6001:6001"
