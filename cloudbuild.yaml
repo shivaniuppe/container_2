@@ -27,7 +27,7 @@ steps:
         "set",
         "image",
         "deployment/container-2-deployment",
-        "container-2=gcr.io/cloud-429207/container_2:latest",
+        "gcr.io/cloud-429207/container_2@sha256:2cb5725163fd8a7ab2aba81824fbada00dd4741f5e1cf519ba0bf632c8d5ceef",
       ]
 
 images:
