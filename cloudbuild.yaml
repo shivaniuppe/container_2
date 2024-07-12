@@ -18,9 +18,7 @@ steps:
     entrypoint: "sh"
     args:
       - "-c"
-      - |
-        # Get the GKE cluster credentials
-        gcloud container clusters get-credentials gke-cluster --zone us-central1 --project cloud-429207
+      - gcloud container clusters get-credentials gke-cluster --zone us-central1 --project cloud-429207
 
   # Step 3: Update the deployment in GKE
   - name: "gcr.io/cloud-builders/kubectl"
