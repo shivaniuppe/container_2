@@ -12,57 +12,41 @@ app2.post('/calculate', (req, res) => {
     const product = data.product;
     const results = [];
 
-    const filePath = path.join('/data', fileName);
+    const filePath = path.join(__dirname, 'data', fileName);
 
     if (!fs.existsSync(filePath)) {
         return res.status(404).json({"file": fileName, "error": "File not found."});
     }
 
     let isCSVFormatValid = true;
-    let errorMessage = "Input file not in CSV format.";
 
     fs.createReadStream(filePath)
         .pipe(csv())
         .on('headers', (headers) => {
             const trimmedHeaders = headers.map(header => header.trim().toLowerCase());
-            const validHeaders = trimmedHeaders.length === 2 && 
-                                 trimmedHeaders[0] === 'product' && 
-                                 trimmedHeaders[1] === 'amount';
-            if (!validHeaders) {
+            if (trimmedHeaders.length !== 2 || trimmedHeaders[0] !== 'product' || trimmedHeaders[1] !== 'amount') {
                 isCSVFormatValid = false;
-                errorMessage = "Invalid headers.";
             }
         })
         .on('data', (row) => {
             if (isCSVFormatValid) {
-                try {
-                    if (!row.product || !row.amount) {
-                        throw new Error('Product or amount is undefined or null.');
-                    }
-        
-                    const trimmedRow = {
-                        product: row.product.trim(),
-                        amount: row.amount.trim()
-                    };
-        
-                    if (!trimmedRow.product || !trimmedRow.amount || isNaN(parseInt(trimmedRow.amount, 10))) {
-                        throw new Error('Invalid product or amount.');
-                    }
-        
+                const trimmedRow = {
+                    product: row.product && row.product.trim(),
+                    amount: row.amount && row.amount.trim()
+                };
+
+                if (trimmedRow.product && trimmedRow.amount && !isNaN(parseInt(trimmedRow.amount, 10))) {
                     if (trimmedRow.product === product) {
                         results.push(parseInt(trimmedRow.amount, 10));
                     }
-                } catch (error) {
-                    console.error('Error processing row:', error.message);
-                    console.error('Row data:', row);
+                } else {
                     isCSVFormatValid = false;
-                    errorMessage = error.message;
                 }
             }
         })
         .on('end', () => {
             if (!isCSVFormatValid) {
-                return res.status(400).json({"file": fileName, "error": errorMessage});
+                return res.status(400).json({"file": fileName, "error": "Input file not in CSV format."});
             }
             if (results.length === 0) {
                 return res.status(400).json({"file": fileName, "error": "No matching product found."});
@@ -70,87 +54,11 @@ app2.post('/calculate', (req, res) => {
             const sum = results.reduce((acc, curr) => acc + curr, 0);
             res.json({"file": fileName, "sum": sum});
         })
-        .on('error', (error) => {
-            console.error('Error reading file:', error);
-            res.status(400).json({"file": fileName, "error": "Error reading file."});
+        .on('error', () => {
+            res.status(400).json({"file": fileName, "error": "Input file not in CSV format."});
         });
 });
 
 app2.listen(6001, () => {
     console.log('Container 2 listening on port 6001');
 });
-
-
-/*const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const csv = require('csv-parser');
-
-const app2 = express();
-app2.use(express.json());
-
-app2.post('/calculate', (req, res) => {
-    const data = req.body;
-    const fileName = data.file;
-    const product = data.product;
-    const results = [];
-
-    const filePath = path.join('/data', fileName);
-
-    if (!fs.existsSync(filePath)) {
-        return res.status(404).json({"file": fileName, "error": "File not found."});
-    }
-
-    let isCSVFormatValid = true;
-
-    fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('headers', (headers) => {
-            const trimmedHeaders = headers.map(header => header.trim().toLowerCase());
-            const validHeaders = trimmedHeaders.length === 2 && 
-                                 trimmedHeaders[0] === 'product' && 
-                                 trimmedHeaders[1] === 'amount';
-            if (!validHeaders) {
-                isCSVFormatValid = false;
-            }
-        })
-        .on('data', (row) => {
-            if (isCSVFormatValid) {
-                try {
-                    const trimmedRow = {
-                        product: row.product.trim(),
-                        amount: row.amount.trim()
-                    };
-                    if (trimmedRow.product && trimmedRow.amount && !isNaN(parseInt(trimmedRow.amount, 10))) {
-                        if (trimmedRow.product === product) {
-                            results.push(parseInt(trimmedRow.amount, 10));
-                        }
-                    } else {
-                        isCSVFormatValid = false;
-                    }
-                } catch (error) {
-                    console.error('Error processing row:', error); // Log any error
-                    isCSVFormatValid = false;
-                }
-            }
-        })
-        .on('end', () => {
-            if (!isCSVFormatValid) {
-                return res.status(400).json({"file": fileName, "error": "Input file not in CSV format1."});
-            }
-            if (results.length === 0) {
-                return res.status(400).json({"file": fileName, "error": "No matching product found."});
-            }
-            const sum = results.reduce((acc, curr) => acc + curr, 0);
-            res.json({"file": fileName, "sum": sum});
-        })
-        .on('error', (error) => {
-            console.error('Error reading file:', error); // Log any error
-            res.status(400).json({"file": fileName, "error": "Input file not in CSV format2."});
-        });
-});
-
-app2.listen(6001, () => {
-    console.log('Container 2 listening on port 6001');
-});
-*/
