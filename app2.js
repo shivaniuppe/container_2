@@ -1,4 +1,4 @@
-const express = require('express');
+[14:40, 2024-07-12] mahdi dal: const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
@@ -12,7 +12,7 @@ app2.post('/calculate', (req, res) => {
     const product = data.product;
     const results = [];
 
-    const filePath = path.join('/data', fileName);
+    const filePath = path.join('./', fileName);
 
     if (!fs.existsSync(filePath)) {
         return res.status(404).json({"file": fileName, "error": "File not found."});
@@ -23,21 +23,15 @@ app2.post('/calculate', (req, res) => {
     fs.createReadStream(filePath)
         .pipe(csv())
         .on('headers', (headers) => {
-            const trimmedHeaders = headers.map(header => header.trim().toLowerCase());
-            if (trimmedHeaders.length !== 2 || trimmedHeaders[0] !== 'product' || trimmedHeaders[1] !== 'amount') {
+            if (headers.length !== 2 || String(headers[0]).trim() !== 'product' || String(headers[1]).trim() !== 'amount') {
                 isCSVFormatValid = false;
             }
         })
         .on('data', (row) => {
             if (isCSVFormatValid) {
-                const trimmedRow = {
-                    product: row.product && row.product.trim(),
-                    amount: row.amount && row.amount.trim()
-                };
-
-                if (trimmedRow.product && trimmedRow.amount && !isNaN(parseInt(trimmedRow.amount, 10))) {
-                    if (trimmedRow.product === product) {
-                        results.push(parseInt(trimmedRow.amount, 10));
+                if (row.product && row.amount && !isNaN(parseInt(String(row.amount).trim(), 10))) {
+                    if (row.product === product) {
+                        results.push(parseInt(String(row.amount).trim(), 10));
                     }
                 } else {
                     isCSVFormatValid = false;
