@@ -20,13 +20,6 @@ steps:
       - "-c"
       - gcloud container clusters get-credentials gke-cluster --zone us-central1 --project cloud-429207
 
-  # Step 3: Apply Kubernetes deployment and service manifests
-  - name: "gcr.io/cloud-builders/kubectl"
-    args: ["apply", "-f", "container_2_deployment.yaml"]
-    env:
-      - "CLOUDSDK_COMPUTE_ZONE=us-central1"
-      - "CLOUDSDK_CONTAINER_CLUSTER=gke-cluster"
-
 images:
   - "gcr.io/cloud-429207/container_2:latest"
 
