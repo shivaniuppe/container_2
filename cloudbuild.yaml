@@ -20,16 +20,6 @@ steps:
       - "-c"
       - gcloud container clusters get-credentials gke-cluster --zone us-central1 --project cloud-429207
 
-  # Step 3: Update the deployment in GKE
-  - name: "gcr.io/cloud-builders/kubectl"
-    args:
-      [
-        "set",
-        "image",
-        "deployment/container-2-deployment",
-        "gcr.io/cloud-429207/container_2@sha256:2cb5725163fd8a7ab2aba81824fbada00dd4741f5e1cf519ba0bf632c8d5ceef",
-      ]
-
 images:
   - "gcr.io/cloud-429207/container_2:latest"
 
