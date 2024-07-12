@@ -114,7 +114,7 @@ app2.post('/calculate', (req, res) => {
         })
         .on('error', (err) => {
             console.error(`Error processing CSV file: ${err.message}`);
-            res.status(500).json({"file": fileName, "error": "Internal Server Error"});
+            res.status(500).json({"file": fileName, "error": "Internal Server Errorplease"});
         });
 });
 
