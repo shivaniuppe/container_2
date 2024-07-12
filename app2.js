@@ -53,7 +53,7 @@ app2.post('/calculate', (req, res) => {
         })
         .on('end', () => {
             if (!isCSVFormatValid) {
-                return res.status(400).json({"file": fileName, "error": "Input file not in CSV format."});
+                return res.status(400).json({"file": fileName, "error": "Input file not in CSV format1."});
             }
             if (results.length === 0) {
                 return res.status(400).json({"file": fileName, "error": "No matching product found."});
@@ -63,7 +63,7 @@ app2.post('/calculate', (req, res) => {
         })
         .on('error', (error) => {
             console.error('Error reading file:', error); // Log any error
-            res.status(400).json({"file": fileName, "error": "Input file not in CSV format."});
+            res.status(400).json({"file": fileName, "error": "Input file not in CSV format2."});
         });
 });
 
