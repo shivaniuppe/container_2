@@ -36,8 +36,11 @@ app2.post('/calculate', (req, res) => {
         .on('data', (row) => {
             if (isCSVFormatValid) {
                 try {
-                    if (!row.product || !row.amount) {
-                        throw new Error('Product or amount is undefined or null.');
+                    if (!row.product){ 
+                        throw new Error('Product is undefined or null.');
+                    }
+                    if(!row.amount){
+                        throw new Error('Amount is undefined or null.');
                     }
         
                     const trimmedRow = {
