@@ -12,7 +12,7 @@ app2.post('/calculate', (req, res) => {
     const fileName = data.file;
     const product = data.product;
     const results = [];
-
+    console.log(fileName);
     const filePath = path.join('/shivani_PV_dir', fileName);
 
     if (!fs.existsSync(filePath)) {
