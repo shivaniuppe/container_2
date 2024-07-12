@@ -36,11 +36,8 @@ app2.post('/calculate', (req, res) => {
         .on('data', (row) => {
             if (isCSVFormatValid) {
                 try {
-                    if (!row.product){ 
-                        throw new Error('Product is undefined or null.');
-                    }
-                    if(!row.amount){
-                        throw new Error('Amount is undefined or null.');
+                    if (!row.product || !row.amount) {
+                        throw new Error('Product or amount is undefined or null.');
                     }
         
                     const trimmedRow = {
@@ -56,14 +53,13 @@ app2.post('/calculate', (req, res) => {
                         results.push(parseInt(trimmedRow.amount, 10));
                     }
                 } catch (error) {
-                    console.error('Error processing row:', error.message); // Log the specific error message
-                    console.error('Row data:', row); // Log the row causing the error
+                    console.error('Error processing row:', error.message);
+                    console.error('Row data:', row);
                     isCSVFormatValid = false;
                     errorMessage = error.message;
                 }
             }
         })
-        
         .on('end', () => {
             if (!isCSVFormatValid) {
                 return res.status(400).json({"file": fileName, "error": errorMessage});
@@ -75,7 +71,7 @@ app2.post('/calculate', (req, res) => {
             res.json({"file": fileName, "sum": sum});
         })
         .on('error', (error) => {
-            console.error('Error reading file:', error); // Log any error
+            console.error('Error reading file:', error);
             res.status(400).json({"file": fileName, "error": "Error reading file."});
         });
 });
