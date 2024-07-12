@@ -26,22 +26,27 @@ app2.post('/calculate', (req, res) => {
             const trimmedHeaders = headers.map(header => header.trim().toLowerCase());
             const validHeaders = trimmedHeaders.length === 2 && 
                                  trimmedHeaders[0] === 'product' && 
-                                 trimmedHeaders[1].replace(/\s/g, '') === 'amount';
+                                 trimmedHeaders[1] === 'amount';
             if (!validHeaders) {
                 isCSVFormatValid = false;
             }
         })
         .on('data', (row) => {
             if (isCSVFormatValid) {
-                const trimmedRow = {
-                    product: row.product.trim(),
-                    amount: row.amount.trim()
-                };
-                if (trimmedRow.product && trimmedRow.amount && !isNaN(parseInt(trimmedRow.amount, 10))) {
-                    if (trimmedRow.product === product) {
-                        results.push(parseInt(trimmedRow.amount, 10));
+                try {
+                    const trimmedRow = {
+                        product: row.product.trim(),
+                        amount: row.amount.trim()
+                    };
+                    if (trimmedRow.product && trimmedRow.amount && !isNaN(parseInt(trimmedRow.amount, 10))) {
+                        if (trimmedRow.product === product) {
+                            results.push(parseInt(trimmedRow.amount, 10));
+                        }
+                    } else {
+                        isCSVFormatValid = false;
                     }
-                } else {
+                } catch (error) {
+                    console.error('Error processing row:', error); // Log any error
                     isCSVFormatValid = false;
                 }
             }
@@ -56,7 +61,8 @@ app2.post('/calculate', (req, res) => {
             const sum = results.reduce((acc, curr) => acc + curr, 0);
             res.json({"file": fileName, "sum": sum});
         })
-        .on('error', () => {
+        .on('error', (error) => {
+            console.error('Error reading file:', error); // Log any error
             res.status(400).json({"file": fileName, "error": "Input file not in CSV format."});
         });
 });
