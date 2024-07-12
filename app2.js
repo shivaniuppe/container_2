@@ -33,9 +33,13 @@ app2.post('/calculate', (req, res) => {
         })
         .on('data', (row) => {
             if (isCSVFormatValid) {
-                if (row.product && row.amount && !isNaN(parseInt(row.amount, 10))) {
-                    if (row.product === product) {
-                        results.push(parseInt(row.amount, 10));
+                const trimmedRow = {
+                    product: row.product.trim(),
+                    amount: row.amount.trim()
+                };
+                if (trimmedRow.product && trimmedRow.amount && !isNaN(parseInt(trimmedRow.amount, 10))) {
+                    if (trimmedRow.product === product) {
+                        results.push(parseInt(trimmedRow.amount, 10));
                     }
                 } else {
                     isCSVFormatValid = false;
