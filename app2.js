@@ -19,6 +19,84 @@ app2.post('/calculate', (req, res) => {
     }
 
     let isCSVFormatValid = true;
+    let errorMessage = "Input file not in CSV format.";
+
+    fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('headers', (headers) => {
+            const trimmedHeaders = headers.map(header => header.trim().toLowerCase());
+            const validHeaders = trimmedHeaders.length === 2 && 
+                                 trimmedHeaders[0] === 'product' && 
+                                 trimmedHeaders[1] === 'amount';
+            if (!validHeaders) {
+                isCSVFormatValid = false;
+                errorMessage = "Invalid headers.";
+            }
+        })
+        .on('data', (row) => {
+            if (isCSVFormatValid) {
+                try {
+                    const trimmedRow = {
+                        product: row.product.trim(),
+                        amount: row.amount.trim()
+                    };
+                    if (trimmedRow.product && trimmedRow.amount && !isNaN(parseInt(trimmedRow.amount, 10))) {
+                        if (trimmedRow.product === product) {
+                            results.push(parseInt(trimmedRow.amount, 10));
+                        }
+                    } else {
+                        isCSVFormatValid = false;
+                        errorMessage = "Invalid row data.";
+                    }
+                } catch (error) {
+                    console.error('Error processing row:', error); // Log any error
+                    isCSVFormatValid = false;
+                    errorMessage = "Error processing row.";
+                }
+            }
+        })
+        .on('end', () => {
+            if (!isCSVFormatValid) {
+                return res.status(400).json({"file": fileName, "error": errorMessage});
+            }
+            if (results.length === 0) {
+                return res.status(400).json({"file": fileName, "error": "No matching product found."});
+            }
+            const sum = results.reduce((acc, curr) => acc + curr, 0);
+            res.json({"file": fileName, "sum": sum});
+        })
+        .on('error', (error) => {
+            console.error('Error reading file:', error); // Log any error
+            res.status(400).json({"file": fileName, "error": "Error reading file."});
+        });
+});
+
+app2.listen(6001, () => {
+    console.log('Container 2 listening on port 6001');
+});
+
+
+/*const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const csv = require('csv-parser');
+
+const app2 = express();
+app2.use(express.json());
+
+app2.post('/calculate', (req, res) => {
+    const data = req.body;
+    const fileName = data.file;
+    const product = data.product;
+    const results = [];
+
+    const filePath = path.join('/data', fileName);
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({"file": fileName, "error": "File not found."});
+    }
+
+    let isCSVFormatValid = true;
 
     fs.createReadStream(filePath)
         .pipe(csv())
@@ -70,3 +148,4 @@ app2.post('/calculate', (req, res) => {
 app2.listen(6001, () => {
     console.log('Container 2 listening on port 6001');
 });
+*/
