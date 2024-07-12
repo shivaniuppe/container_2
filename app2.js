@@ -50,8 +50,9 @@ app2.post('/calculate', (req, res) => {
                     }
                 } catch (error) {
                     console.error('Error processing row:', error); // Log any error
+                    console.error('Row data:', row); // Log the row causing the error
                     isCSVFormatValid = false;
-                    errorMessage = "Error processing row.";
+                    errorMessage = "'Error processing row:" +  error + " Row data: " + row + "Error processing row.";
                 }
             }
         })
